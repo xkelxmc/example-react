@@ -17,9 +17,23 @@ const useUnMount = (callback) => {
   }, []);
 }
 
+const useAddMouseListener = (count) => {
+  useEffect(() => {
+    const mouseMove = (e) => {
+      console.log(count, e.clientX, e.clientY)
+    }
+    document.addEventListener('mousemove', mouseMove);
+    return () => {
+      document.removeEventListener('mousemove', mouseMove)
+    }
+  }, [count]);
+}
+
 export const Counter = ({intValue = 0}) => {
   const [count, setCount] = useState(intValue);
   const [value, setValue] = useState(0);
+
+  useAddMouseListener(count)
 
   useMount(() => {
     console.log('Mount custom')
