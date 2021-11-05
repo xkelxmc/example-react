@@ -3,16 +3,9 @@ import {TodoItemsList} from "./components/TodoItemsList";
 import {useState} from "react";
 
 export const TodoList = () => {
-  const [todos, setTodos] = useState(
-    [
-      {text: "todo 1", complete: false,},
-      {text: "todo 2", complete: true},
-    ]
-  )
+  const [todos, setTodos] = useState(['todo1', 'todo2'])
 
-  const addTodo = (text) => {
-    const newTodo = {text: text, complete: false}
-
+  const addTodo = (newTodo) => {
     /** Example 1: not good */
     // setTodos((prev) => {
     //   const newTodoList = []
@@ -58,32 +51,14 @@ export const TodoList = () => {
     setTodos(prev => prev.filter((_, i) => index !== i))
   }
 
-  const toggleTodo = (index) => {
-    /** Example 1: not good */
-    // setTodos((prev) => {
-    //   const newTodoList = [];
-    //   prev.forEach((value, i) => {
-    //     if (index === i) {
-    //       value.complete = !value.complete;
-    //     }
-    //     newTodoList.push(value)
-    //   })
+  const completeTodo = () => {
     //
-    //   return newTodoList
-    // })
-
-    /** Example 2: perfect!!! */
-    //https://csharpcorner-mindcrackerinc.netdna-ssl.com/article/simplify-map-reduce-and-filter-in-typescript/Images/map_filter_reduce.png
-    setTodos(prev => prev.map((value, i) => ({
-      ...value,
-      complete: index === i ? !value.complete : value.complete
-    })))
   }
 
   return (
     <div>
-      <TodoListForm addTodo={addTodo}/>
-      <TodoItemsList todos={todos} removeTodo={removeTodo} toggleTodo={toggleTodo}/>
+      <TodoListForm addTodo={addTodo} />
+      <TodoItemsList todos={todos} removeTodo={removeTodo} completeTodo={completeTodo} />
     </div>
   )
 }
