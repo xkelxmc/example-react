@@ -5,7 +5,7 @@ import {useState} from "react";
 export const TodoList = () => {
   const [todos, setTodos] = useState(
     [
-      {text: "todo 1", complete: false,},
+      {text: "todo 1", complete: false},
       {text: "todo 2", complete: true},
     ]
   )
@@ -81,7 +81,7 @@ export const TodoList = () => {
   }
 
   return (
-    <div>
+    <div style={{width: 500}}>
       <TodoListForm addTodo={addTodo}/>
       <TodoItemsList todos={todos} removeTodo={removeTodo} toggleTodo={toggleTodo}/>
     </div>
