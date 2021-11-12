@@ -2,11 +2,11 @@ const todoStyles = {borderRadius: 4, flexGrow: '1', padding: 6, display: 'flex'}
 
 export const TodoItem = ({todo, index, toggleTodo, removeTodo}) => {
   const handleRemove = () => {
-    removeTodo(index)
+    removeTodo(todo.id)
   }
 
   const handleCheckItem = () => {
-    toggleTodo(index)
+    toggleTodo(todo.id)
   }
 
   const isComplete = todo.complete

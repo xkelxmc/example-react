@@ -1,17 +1,18 @@
 import {TodoListForm} from "./components/TodoListForm";
 import {TodoItemsList} from "./components/TodoItemsList";
 import {useState} from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 export const TodoList = () => {
   const [todos, setTodos] = useState(
     [
-      {text: "todo 1", complete: false},
-      {text: "todo 2", complete: true},
+      {text: "todo 1", complete: false, id: uuidv4(), date: new Date()},
+      {text: "todo 2", complete: true, id: uuidv4(), date: new Date()},
     ]
   )
 
   const addTodo = (text) => {
-    const newTodo = {text: text, complete: false}
+    const newTodo = {text: text, complete: false, id: uuidv4(), date: new Date()}
 
     /** Example 1: not good */
     // setTodos((prev) => {
@@ -28,7 +29,7 @@ export const TodoList = () => {
     setTodos((prev) => [...prev, newTodo])
   }
 
-  const removeTodo = (index) => {
+  const removeTodo = (id) => {
     /** Example 1: not good */
     // setTodos((prev) => {
     //   const newTodoList = [];
@@ -55,10 +56,10 @@ export const TodoList = () => {
     // })
 
     /** Example 3: perfect!!! */
-    setTodos(prev => prev.filter((_, i) => index !== i))
+    setTodos(prev => prev.filter((todo) => todo.id !== id))
   }
 
-  const toggleTodo = (index) => {
+  const toggleTodo = (id) => {
     /** Example 1: not good */
     // setTodos((prev) => {
     //   const newTodoList = [];
@@ -74,9 +75,9 @@ export const TodoList = () => {
 
     /** Example 2: perfect!!! */
     //https://csharpcorner-mindcrackerinc.netdna-ssl.com/article/simplify-map-reduce-and-filter-in-typescript/Images/map_filter_reduce.png
-    setTodos(prev => prev.map((value, i) => ({
-      ...value,
-      complete: index === i ? !value.complete : value.complete
+    setTodos(prev => prev.map((todo) => ({
+      ...todo,
+      complete: todo.id === id ? !todo.complete : todo.complete
     })))
   }
 
