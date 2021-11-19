@@ -3,48 +3,50 @@ import {TodoItemsList} from "./components/TodoItemsList";
 import {useEffect, useReducer} from "react";
 import {v4 as uuidv4} from "uuid";
 
+const ActionTypes = {
+  LOAD_DATA: 'loadData'
+}
+
 function todoReducer(state, action) {
   console.log("todoReducer", state, action)
+  const newState = {
+    ...state,
+  }
 
-  switch (action.type) {
-    case "loadData":
-      return {
-        ...state,
-        isLoading: true,
-      }
-    case "loadingComplete":
-      return {
-        ...state,
-        isLoading: false,
-        list: action.payload,
-      }
-    case "addTodo":
+  const todoActions = {
+    [ActionTypes.LOAD_DATA]: () => {
+      newState.isLoading = true;
+    },
+    loadingComplete: () => {
+      newState.isLoading = false;
+      newState.list = action.payload;
+    },
+    addTodo: () => {
       const newTodo = {
         text: action.payload,
         complete: false,
         id: uuidv4(),
         date: new Date()
       }
-      return {
-        ...state,
-        list: [...state.list, newTodo]
-      };
-    case "removeTodo":
-      return {
-        ...state,
-        list: state.list.filter((todo) => todo.id !== action.payload)
-      }
-    case "toggleTodo":
-      return {
-        ...state,
-        list: state.list.map((todo) => ({
-          ...todo,
-          complete: todo.id === action.payload ? !todo.complete : todo.complete
-        }))
-      }
-    default:
-      throw new Error();
+      newState.list = [...newState.list, newTodo];
+    },
+    removeTodo: () => {
+      newState.list = state.list.filter((todo) => todo.id !== action.payload)
+    },
+    toggleTodo: () => {
+      newState.list = state.list.map((todo) => ({
+        ...todo,
+        complete: todo.id === action.payload ? !todo.complete : todo.complete
+      }))
+    },
   }
+
+  if(todoActions[action.type]) {
+    todoActions[action.type]()
+    return newState
+  }
+
+  return state
 }
 
 const serverData = [
@@ -62,7 +64,7 @@ export const TodoList = () => {
   const [state, dispatch] = useReducer(todoReducer, initialValue)
 
   useEffect(() => {
-    dispatch({type: "loadData"})
+    dispatch({type: ActionTypes.LOAD_DATA})
     setTimeout(() => {
       dispatch({type: "loadingComplete", payload: serverData})
     }, 3000)
