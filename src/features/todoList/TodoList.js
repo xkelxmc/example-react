@@ -8,7 +8,7 @@ const ActionTypes = {
 }
 
 function todoReducer(state, action) {
-  console.log("todoReducer", state, action)
+  // console.log("todoReducer", state, action)
   const newState = {
     ...state,
   }
@@ -41,7 +41,7 @@ function todoReducer(state, action) {
     },
   }
 
-  if(todoActions[action.type]) {
+  if (todoActions[action.type]) {
     todoActions[action.type]()
     return newState
   }
