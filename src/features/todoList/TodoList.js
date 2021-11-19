@@ -1,90 +1,98 @@
 import {TodoListForm} from "./components/TodoListForm";
 import {TodoItemsList} from "./components/TodoItemsList";
-import {useState} from "react";
-import { v4 as uuidv4 } from 'uuid';
+import {useEffect, useReducer} from "react";
+import {v4 as uuidv4} from "uuid";
+
+function todoReducer(state, action) {
+  console.log("todoReducer", state, action)
+
+  switch (action.type) {
+    case "loadData":
+      return {
+        ...state,
+        isLoading: true,
+      }
+    case "loadingComplete":
+      return {
+        ...state,
+        isLoading: false,
+        list: action.payload,
+      }
+    case "addTodo":
+      const newTodo = {
+        text: action.payload,
+        complete: false,
+        id: uuidv4(),
+        date: new Date()
+      }
+      return {
+        ...state,
+        list: [...state.list, newTodo]
+      };
+    case "removeTodo":
+      return {
+        ...state,
+        list: state.list.filter((todo) => todo.id !== action.payload)
+      }
+    case "toggleTodo":
+      return {
+        ...state,
+        list: state.list.map((todo) => ({
+          ...todo,
+          complete: todo.id === action.payload ? !todo.complete : todo.complete
+        }))
+      }
+    default:
+      throw new Error();
+  }
+}
+
+const serverData = [
+  {text: "todo 1", complete: false, id: uuidv4(), date: new Date()},
+  {text: "todo 2", complete: true, id: uuidv4(), date: new Date()},
+]
+
+const initialValue = {
+  list: [],
+  isLoading: false,
+  user: "userName"
+}
 
 export const TodoList = () => {
-  const [todos, setTodos] = useState(
-    [
-      {text: "todo 1", complete: false, id: uuidv4(), date: new Date()},
-      {text: "todo 2", complete: true, id: uuidv4(), date: new Date()},
-    ]
-  )
+  const [state, dispatch] = useReducer(todoReducer, initialValue)
+
+  useEffect(() => {
+    dispatch({type: "loadData"})
+    setTimeout(() => {
+      dispatch({type: "loadingComplete", payload: serverData})
+    }, 3000)
+  }, []);
+
 
   const addTodo = (text) => {
-    const newTodo = {text: text, complete: false, id: uuidv4(), date: new Date()}
-
-    /** Example 1: not good */
-    // setTodos((prev) => {
-    //   const newTodoList = []
-    //   prev.forEach(todo => {
-    //     newTodoList.push(todo)
-    //   })
-    //   newTodoList.push(newTodo)
-    //
-    //   return newTodoList
-    // })
-
-    /** Example 2: perfect!!! */
-    setTodos((prev) => [...prev, newTodo])
+    dispatch({type: "addTodo", payload: text})
   }
 
   const removeTodo = (id) => {
-    /** Example 1: not good */
-    // setTodos((prev) => {
-    //   const newTodoList = [];
-    //   for(let i = 0; i <= prev.length; i++) {
-    //     const value = prev[i]
-    //     if(i !== index) {
-    //       newTodoList.push(value)
-    //     }
-    //   }
-    //
-    //   return newTodoList
-    // })
-
-    /** Example 2: not good */
-    // setTodos((prev) => {
-    //   const newTodoList = [];
-    //   prev.forEach((value, i) => {
-    //     if(i !== index) {
-    //       newTodoList.push(value)
-    //     }
-    //   })
-    //
-    //   return newTodoList
-    // })
-
-    /** Example 3: perfect!!! */
-    setTodos(prev => prev.filter((todo) => todo.id !== id))
+    dispatch({type: "removeTodo", payload: id})
   }
 
   const toggleTodo = (id) => {
-    /** Example 1: not good */
-    // setTodos((prev) => {
-    //   const newTodoList = [];
-    //   prev.forEach((value, i) => {
-    //     if (index === i) {
-    //       value.complete = !value.complete;
-    //     }
-    //     newTodoList.push(value)
-    //   })
-    //
-    //   return newTodoList
-    // })
+    dispatch({type: "toggleTodo", payload: id})
+  }
 
-    /** Example 2: perfect!!! */
-    //https://csharpcorner-mindcrackerinc.netdna-ssl.com/article/simplify-map-reduce-and-filter-in-typescript/Images/map_filter_reduce.png
-    setTodos(prev => prev.map((todo) => ({
-      ...todo,
-      complete: todo.id === id ? !todo.complete : todo.complete
-    })))
+  if (state.isLoading) {
+    return (
+      <div>
+        Loading...
+      </div>
+    )
   }
 
   return (
     <div style={{width: 500}}>
       <TodoListForm addTodo={addTodo}/>
-      <TodoItemsList todos={todos} removeTodo={removeTodo} toggleTodo={toggleTodo}/>
+      <TodoItemsList todos={state.list} removeTodo={removeTodo} toggleTodo={toggleTodo}/>
     </div>
   )
 }
